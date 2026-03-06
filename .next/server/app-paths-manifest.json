@@ -1,3 +1,6 @@
 {
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/install/page": "app/install/page.js",
+  "/pricing/page": "app/pricing/page.js",
+  "/api/stripe/checkout/route": "app/api/stripe/checkout/route.js"
 }

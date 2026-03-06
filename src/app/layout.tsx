@@ -4,8 +4,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "ProfitPilot Ads",
-  description: "Stop burning ad budget in the dark."
+  title: "ProfitPilot Ads — Shopify Ads Copilot",
+  description: "Shopify App that connects Meta, Google and TikTok. Preflight checklist, Budget Shield, profit-first dashboard. Stop budget waste, boost conversions."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

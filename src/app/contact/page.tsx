@@ -1,14 +1,27 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalLayout } from "@/components/LegalLayout";
+
+export const metadata: Metadata = {
+  title: "Contact — ProfitPilot Ads",
+  description: "Support and contact for ProfitPilot Ads.",
+};
+
+const UPDATED_AT = "March 6, 2026";
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-2xl">
-      <h1 className="text-3xl font-semibold text-white">Contact</h1>
-      <p className="mt-4 text-neutral-400">
-        Support:{" "}
-        <a href="mailto:support@profitpilotads.com" className="text-neutral-200 hover:text-white">support@profitpilotads.com</a>
+    <LegalLayout
+      title="Contact"
+      updatedAt={UPDATED_AT}
+    >
+      <h2>Support</h2>
+      <p>
+        Email: <a href="mailto:support@profitpilotads.com">support@profitpilotads.com</a>
       </p>
-      <Link href="/" className="mt-6 inline-block text-sm text-neutral-400 hover:text-white">← Back to home</Link>
-    </div>
+      <p>
+        We respond on business days (business hours, Brazil). We aim to reply as soon as possible. For data deletion requests or legal inquiries, see our <Link href="/privacy">Privacy Policy</Link> and <Link href="/data-deletion">Data Deletion</Link> page.
+      </p>
+    </LegalLayout>
   );
 }

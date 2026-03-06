@@ -45,7 +45,7 @@ export function Footer() {
           <div>
             <div className="text-xs font-medium uppercase tracking-wider text-neutral-500">Support</div>
             <p className="mt-3 text-sm text-neutral-400">
-              <a href="mailto:support@profitpilotads.com" className="hover:text-white">
+              Support: <a href="mailto:support@profitpilotads.com" className="hover:text-white">
                 support@profitpilotads.com
               </a>
             </p>

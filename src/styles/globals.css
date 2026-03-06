@@ -13,3 +13,25 @@ html, body {
 body {
   @apply bg-neutral-950 text-neutral-100;
 }
+
+.legal-content h2 {
+  @apply mt-10 border-b border-neutral-800 pb-2 text-xl font-semibold text-white;
+}
+.legal-content h3 {
+  @apply mt-6 text-lg font-semibold text-white;
+}
+.legal-content p {
+  @apply leading-relaxed text-neutral-300;
+}
+.legal-content ul {
+  @apply list-inside list-disc space-y-1 pl-2;
+}
+.legal-content li {
+  @apply text-neutral-300;
+}
+.legal-content a {
+  @apply text-neutral-200 underline hover:text-white;
+}
+.legal-content strong {
+  @apply font-semibold text-neutral-200;
+}

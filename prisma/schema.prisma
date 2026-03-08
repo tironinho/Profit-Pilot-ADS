@@ -1,0 +1,183 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+enum Provider {
+  META
+  GOOGLE
+  TIKTOK
+}
+
+model Shop {
+  id              String    @id @default(cuid())
+  shopDomain      String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  currency        String?
+  timezone        String?
+  marginRate      Float?
+  targetCPA       Float?
+  minROAS         Float?
+  targetMER       Float?
+  dailyRiskCap    Float?
+  autopilotEnabled Boolean  @default(false)
+  connections     ProviderConnection[]
+  accounts        ProviderAccount[]
+  preflightRuns   PreflightRun[]
+  shieldRules     ShieldRule[]
+  alerts          ShieldAlert[]
+  aggregates      DailyAggregate[]
+  providerConfigs ProviderClientConfig[]
+  oauthStates     OAuthState[]
+}
+
+model ProviderConnection {
+  id              String    @id @default(cuid())
+  provider        Provider
+  shopId          String
+  shop            Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  status          String    @default("CONNECTED")
+  accessTokenEnc  String?
+  refreshTokenEnc String?
+  tokenExpiresAt  DateTime?
+  scopes          String?
+  meta            String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  @@unique([shopId, provider])
+}
+
+model ProviderAccount {
+  id                String   @id @default(cuid())
+  provider          Provider
+  shopId            String
+  shop              Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  externalAccountId String
+  name              String?
+  isSelected        Boolean  @default(false)
+  meta              String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  @@index([shopId, provider])
+}
+
+model PreflightRun {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  status    String   @default("DONE")
+  summary   String?
+  createdAt DateTime @default(now())
+  checks    PreflightCheckResult[]
+}
+
+model PreflightCheckResult {
+  id      String       @id @default(cuid())
+  runId   String
+  run     PreflightRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  key     String
+  title   String
+  status  String
+  message String?
+  data    String?
+}
+
+model ShieldRule {
+  id                 String   @id @default(cuid())
+  shopId             String
+  shop               Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  provider           Provider?
+  enabled            Boolean  @default(true)
+  windowHours        Int      @default(24)
+  maxSpendNoPurchase Float?
+  targetCPA          Float?
+  minROAS            Float?
+  dailyRiskCap       Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model ShieldAlert {
+  id         String    @id @default(cuid())
+  shopId     String
+  shop       Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  provider   Provider?
+  severity   String
+  type       String
+  title      String
+  message    String
+  data       String?
+  status     String    @default("OPEN")
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+}
+
+model DailyAggregate {
+  id              String   @id @default(cuid())
+  shopId          String
+  shop            Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  day             DateTime
+  revenue         Float    @default(0)
+  orders          Int      @default(0)
+  spendMeta       Float    @default(0)
+  spendGoogle     Float    @default(0)
+  spendTikTok     Float    @default(0)
+  purchasesMeta   Int?
+  purchasesGoogle Int?
+  purchasesTikTok Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@unique([shopId, day])
+}
+
+model ProviderClientConfig {
+  id             String   @id @default(cuid())
+  shopId         String
+  shop           Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  provider       Provider
+  clientIdEnc    String
+  clientSecretEnc String
+  extraEnc       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@unique([shopId, provider])
+}
+
+model OAuthState {
+  id        String   @id @default(cuid())
+  state     String   @unique
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  provider  Provider
+  returnTo  String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

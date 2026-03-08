@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Shopify App Template - React Router
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using [React Router](https://reactrouter.com/). It was forked from the [Shopify Remix app template](https://github.com/Shopify/shopify-app-template-remix) and converted to React Router.
@@ -234,3 +235,39 @@ Shopify:
 Internationalization:
 
 - [Internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
+=======
+# ProfitPilot Ads — Marketing Site + Stripe Subscription (Next.js)
+
+Deploy-ready Next.js (React) site for Vercel:
+- Landing + Pricing
+- Stripe Checkout (subscription)
+- Stripe Billing Portal
+- Success/cancel pages
+- Minimal dashboard (reads Stripe customer cookie)
+
+## Create the Stripe price ($49.90/month)
+Stripe Dashboard:
+- Products -> Add product
+- Pricing: Recurring, Monthly, USD 49.90
+- Copy the **Price ID** (looks like `price_...`) into `STRIPE_PRICE_ID`
+
+## Configure environment variables
+Create `.env.local`:
+- copy `.env.example` and fill values
+
+## Run locally
+```bash
+npm i
+npm run dev
+```
+
+## Deploy to Vercel
+- Import the project
+- Set the env vars
+- Deploy
+
+## Webhook (optional)
+Stripe webhook endpoint:
+- URL: https://YOUR_DOMAIN/api/stripe/webhook
+- Events: checkout.session.completed, customer.subscription.*, invoice.*
+>>>>>>> cae998180583fe3f314d5d9152fc919425e3e5e6

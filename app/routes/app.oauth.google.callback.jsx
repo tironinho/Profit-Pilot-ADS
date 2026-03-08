@@ -10,7 +10,7 @@ export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  console.log("[OAuth Google] callback received");
+  console.log("[OAuth Google] callback received", { hasCode: Boolean(code), hasState: Boolean(state) });
   if (!code || !state) {
     console.log("[OAuth Google] callback missing code or state");
     return redirect("/app/connect?error=provider&provider=GOOGLE");
@@ -27,7 +27,8 @@ export const loader = async ({ request }) => {
   if (!credentials) return redirect("/app/connect?error=provider&provider=GOOGLE");
 
   try {
-    const redirectUri = Google.getGoogleRedirectUri(request);
+    const redirectUri = Google.getGoogleRedirectUriForOAuth() ?? Google.getGoogleRedirectUri(request);
+    if (!redirectUri) return redirect("/app/connect?error=provider&provider=GOOGLE");
     await Google.exchangeCodeAndSave({
       code,
       shopId,
@@ -40,7 +41,7 @@ export const loader = async ({ request }) => {
     console.error("[OAuth Google] callback error:", e.message);
     return redirect("/app/connect?error=provider&provider=GOOGLE");
   }
-  const base = getBaseUrl(request);
+  const base = process.env.SHOPIFY_APP_URL?.replace(/\/$/, "") || getBaseUrl(request);
   const fallbackPath = `/app/connect?connected=GOOGLE`;
   const targetPath = returnTo
     ? `${returnTo}${returnTo.includes("?") ? "&" : "?"}connected=GOOGLE`

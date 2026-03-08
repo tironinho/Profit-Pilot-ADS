@@ -38,6 +38,16 @@ export function getGoogleRedirectUri(request) {
   return `${base}/app/oauth/google/callback`;
 }
 
+/**
+ * OAuth redirect_uri must always use SHOPIFY_APP_URL (not request host) so Google
+ * redirects to the same origin that started the flow (embedded app may use different host).
+ */
+export function getGoogleRedirectUriForOAuth() {
+  const base = process.env.SHOPIFY_APP_URL;
+  if (!base) return null;
+  return `${base.replace(/\/$/, "")}/app/oauth/google/callback`;
+}
+
 /** Build Google OAuth consent URL (use with clientId from getGoogleCredentials). */
 export function buildGoogleAuthUrl({ request, state }) {
   const redirectUri = getGoogleRedirectUri(request);

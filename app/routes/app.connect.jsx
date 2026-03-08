@@ -8,7 +8,12 @@ import * as Meta from "../services/providers/meta.server";
 import * as Google from "../services/providers/google.server";
 import * as TikTok from "../services/providers/tiktok.server";
 
-const OAUTH_PATHS = { META: "/app/oauth/meta", GOOGLE: "/app/oauth/google", TIKTOK: "/app/oauth/tiktok" };
+const OAUTH_PATHS = {
+  META: "/app/oauth/meta",
+  GOOGLE: "/app/oauth/google",
+  GOOGLE_START: "/app/oauth/google/start",
+  TIKTOK: "/app/oauth/tiktok",
+};
 
 export const loader = async ({ request }) => {
   const { session } = await authenticate.admin(request);
@@ -80,6 +85,30 @@ export default function Connect() {
   const location = useLocation();
   const qs = location.search || "";
 
+  async function handleConnectGoogle(e) {
+    e.preventDefault();
+    const returnTo = `/app/connect${qs}`;
+    try {
+      const res = await fetch(OAUTH_PATHS.GOOGLE_START, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ returnTo }),
+      });
+      const data = await res.json();
+      if (data.redirect) {
+        window.open(data.redirect, "_top");
+        return;
+      }
+      if (!data.authUrl) {
+        window.open(`/app/connect?error=provider&provider=GOOGLE`, "_top");
+        return;
+      }
+      window.open(data.authUrl, "_top");
+    } catch {
+      window.open(`/app/connect?error=provider&provider=GOOGLE`, "_top");
+    }
+  }
+
   return (
     <s-page heading="Connect Channels">
       {error === "encryption" && (
@@ -107,16 +136,28 @@ export default function Connect() {
                   <StatusBadge c={c} />
                 </s-stack>
                 {c.available && !c.connected && (
-                  <Link to={`${OAUTH_PATHS[c.provider]}${qs}`}>
-                    <s-button variant="primary">+ connect {c.provider}</s-button>
-                  </Link>
+                  c.provider === "GOOGLE" ? (
+                    <s-button variant="primary" onClick={handleConnectGoogle}>
+                      + connect {c.provider}
+                    </s-button>
+                  ) : (
+                    <Link to={`${OAUTH_PATHS[c.provider]}${qs}`}>
+                      <s-button variant="primary">+ connect {c.provider}</s-button>
+                    </Link>
+                  )
                 )}
                 {c.connected && (
                   <>
                     <s-stack direction="inline" gap="base">
-                      <Link to={`${OAUTH_PATHS[c.provider]}${qs}`}>
-                        <s-button variant="secondary" size="slim">Reconnect</s-button>
-                      </Link>
+                      {c.provider === "GOOGLE" ? (
+                        <s-button variant="secondary" size="slim" onClick={handleConnectGoogle}>
+                          Reconnect
+                        </s-button>
+                      ) : (
+                        <Link to={`${OAUTH_PATHS[c.provider]}${qs}`}>
+                          <s-button variant="secondary" size="slim">Reconnect</s-button>
+                        </Link>
+                      )}
                       <fetcher.Form method="post" style={{ display: "inline" }}>
                         <input type="hidden" name="intent" value="disconnect_provider" />
                         <input type="hidden" name="provider" value={c.provider} />
